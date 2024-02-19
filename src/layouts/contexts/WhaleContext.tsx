@@ -4,7 +4,6 @@ import {
 } from "@defichain/playground-api-client";
 import {
   EnvironmentNetwork,
-  newOceanOptions as getOceanOptions,
   newWhaleAPIClient,
   newWhaleRpcClient,
 } from "@waveshq/walletkit-core";
@@ -81,20 +80,57 @@ export function WhaleProvider(
     </WhaleApiClientContext.Provider>
   );
 }
-
-function newOceanOptions(
-  connection: EnvironmentNetwork = EnvironmentNetwork.MainNet,
-  url?: string,
-): WhaleApiClientOptions {
-  return getOceanOptions(connection, url);
-}
-
 function newWhaleClient(options: WhaleApiClientOptions): WhaleApiClient {
   return newWhaleAPIClient(options);
 }
 
 function newRpcClient(options: WhaleApiClientOptions): WhaleRpcClient {
   return newWhaleRpcClient(options);
+}
+
+function newOceanOptions(
+  network: EnvironmentNetwork,
+  url?: string
+): WhaleApiClientOptions {
+  switch (network) {
+    case EnvironmentNetwork.LocalPlayground:
+      return {
+        url: url ?? "http://localhost:19553",
+        network: "regtest",
+        version: "v0",
+      };
+    case EnvironmentNetwork.RemotePlayground:
+      return {
+        url: url ?? "https://playground.jellyfishsdk.com",
+        network: "regtest",
+        version: "v0",
+      };
+    case EnvironmentNetwork.TestNet:
+      return {
+        url: url ?? "https://testnet-ocean.mydefichain.com:8443",
+        network: "testnet",
+        version: "v0",
+      };
+    case EnvironmentNetwork.DevNet:
+      return {
+        url: url ?? "http://tb01.mydefichain.com:3000",
+        network: "testnet",
+        version: "v0",
+      };
+    case EnvironmentNetwork.Changi:
+      return {
+        url: url ?? "https://changi-ocean.mydefichain.com",
+        network: "changi",
+        version: "v0",
+      };
+    case EnvironmentNetwork.MainNet:
+    default:
+      return {
+        url: url ?? "https://ocean.mydefichain.com",
+        network: "mainnet",
+        version: "v0",
+      };
+  }
 }
 
 // TODO remove this before release to prod
